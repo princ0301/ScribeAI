@@ -1,0 +1,49 @@
+// prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DATABASE_URL")
+}
+
+model User {
+  id        String     @id @default(cuid())
+  email     String     @unique
+  name      String?
+  password  String?
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  sessions  Session[]
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title        String   @default("Untitled Session")
+  audioUrl     String?
+  rawTranscript String?
+  summary      String?
+  duration     Int      @default(0) // in seconds
+  status       String   @default("completed") // recording, processing, completed
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  deletedAt    DateTime?
+
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model TranscriptionChunk {
+  id        String   @id @default(cuid())
+  sessionId String
+  order     Int
+  text      String
+  timestamp Int      // when in recording (ms)
+  createdAt DateTime @default(now())
+
+  @@index([sessionId])
+}
