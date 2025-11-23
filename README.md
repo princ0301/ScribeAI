@@ -1,19 +1,19 @@
-# 🎙️ ScribeAI - AI-Powered Meeting Transcription
+# ScribeAI - AI-Powered Meeting Transcription
 
 A full-stack application that captures, transcribes, and summarizes audio sessions in real-time using Google Gemini API and WebSocket communication.
 
 **Live Features:**
-- 🎙️ Real-time audio recording (microphone & tab-share)
-- ⚡ Live transcription via Gemini API
-- 📝 Automatic AI-generated summaries
-- 🔄 Real-time status updates via Socket.io
-- 💾 Session persistence in PostgreSQL
-- 📊 Session history & management
-- 💾 Export transcripts as text files
+- Real-time audio recording (microphone & tab-share)
+- Live transcription via Gemini API
+- Automatic AI-generated summaries
+- Real-time status updates via Socket.io
+- Session persistence in PostgreSQL
+- Session history & management
+- Export transcripts as text files
 
 ---
 
-## 🏗️ Architecture Overview
+## Architecture Overview
 
 ```
 ┌─────────────────────────────────────────────────────────┐
@@ -41,7 +41,7 @@ A full-stack application that captures, transcribes, and summarizes audio sessio
 
 ---
 
-## 📋 Architecture Comparison: Streaming vs. Upload
+## Architecture Comparison: Streaming vs. Upload
 
 | Aspect | Streaming (Current) | Upload Approach |
 |--------|-------------------|-----------------|
@@ -61,7 +61,7 @@ A full-stack application that captures, transcribes, and summarizes audio sessio
 
 ---
 
-## 🚀 Quick Start (5 minutes)
+## Quick Start (5 minutes)
 
 ### Prerequisites
 - Node.js 18+
@@ -69,14 +69,14 @@ A full-stack application that captures, transcribes, and summarizes audio sessio
 - Neon PostgreSQL database
 - Gemini API key
 
-### 1️⃣ Clone & Install
+### Clone & Install
 ```bash
-git clone https://github.com/yourusername/scribeai.git
-cd scribeai
+git clone https://github.com/princ0301/ScribeAI.git
+cd ScribeAI
 npm install
 ```
 
-### 2️⃣ Setup Environment
+### Setup Environment
 Create `.env.local`:
 ```env
 GEMINI_API_KEY=
@@ -85,19 +85,19 @@ NEXT_PUBLIC_SOCKET_URL=http://localhost:3001
 NEXT_PUBLIC_APP_URL=http://localhost:3000
 ```
 
-### 3️⃣ Setup Database
+### Setup Database
 ```bash
 npx prisma migrate dev --name init
 npx prisma generate
 ```
 
-### 4️⃣ Start Services
+### Start Services
 
 **Terminal 1 - WebSocket Server:**
 ```bash
 npm run socket-server
 ```
-Expected output: `🚀 Socket.io server running on port 3001`
+Expected output: `Socket.io server running on port 3001`
 
 **Terminal 2 - Next.js App:**
 ```bash
@@ -105,12 +105,12 @@ npm run dev
 ```
 Expected output: `ready - started server on 0.0.0.0:3000`
 
-### 5️⃣ Open Browser
+### Open Browser
 Navigate to: **http://localhost:3000**
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 scribeai/
@@ -144,9 +144,7 @@ scribeai/
 └── tailwind.config.js
 ```
 
----
-
-## 🔧 Configuration
+## Configuration
 
 ### Prisma Database Setup
 ```bash
@@ -160,26 +158,7 @@ npx prisma db push
 npx prisma studio
 ```
 
-### Gemini API
-Get free API key: https://ai.google.dev
-
-Models used:
-- `gemini-1.5-flash` - Fast transcription (recommended)
-- `gemini-1.5-pro` - Higher accuracy (optional)
-
-### Socket.io Configuration
-Default ports:
-- **WebSocket Server:** `3001`
-- **Next.js App:** `3000`
-
-Modify in `server/socket-server.js`:
-```javascript
-const PORT = process.env.SOCKET_PORT || 3001;
-```
-
----
-
-## 📖 Usage Flow
+## Usage Flow
 
 ### 1. Start Recording
 - Go to Dashboard
@@ -209,7 +188,7 @@ const PORT = process.env.SOCKET_PORT || 3001;
 
 ---
 
-## 🎯 Core Features Explained
+## Core Features Explained
 
 ### Real-time Streaming Pipeline
 ```
@@ -242,7 +221,7 @@ Recording states:
 
 ---
 
-## 🔌 WebSocket Events
+## WebSocket Events
 
 ### Client → Server
 ```javascript
@@ -264,7 +243,7 @@ socket.on('transcription_error', { error })
 
 ---
 
-## 🧪 Testing Locally
+## Testing Locally
 
 ### Test Mic Recording
 1. Dashboard → Start Recording
@@ -292,22 +271,7 @@ npm run dev
 # Record 30 seconds → Stop → Check transcript
 ```
 
----
-
-## 🐛 Troubleshooting
-
-| Issue | Solution |
-|-------|----------|
-| WebSocket won't connect | Ensure Node server runs on 3001: `npm run socket-server` |
-| Database connection error | Check DATABASE_URL in .env.local, verify Neon credentials |
-| Gemini API returns 403 | Verify API key is valid at https://ai.google.dev |
-| Microphone permission denied | Browser permissions → Allow microphone access |
-| Tab share unavailable | Only works on localhost or HTTPS |
-| "Can't connect to 0.0.0.0:3000" | Port 3000 in use, change: `npm run dev -- -p 3001` |
-
----
-
-## 📊 Long-Session Scalability (200+ words)
+## Long-Session Scalability (200+ words)
 
 **Challenge:** Handling 1+ hour recordings without memory overload.
 
@@ -317,45 +281,8 @@ npm run dev
 3. **Database Chunking:** Each 30-second chunk stored as TranscriptionChunk record with order index
 4. **WebSocket Broadcasting:** Real-time updates prevent UI blocking while processing
 5. **Fault Tolerance:** Session recovery on connection drop - only last chunk lost, not entire recording
-
-**Scalability Considerations:**
-- Concurrent sessions: Current architecture supports ~50 simultaneous recordings on single Node server
-- For 1000+ users: Implement session queue, load-balance across multiple Node servers, use Redis for session state
-- Memory optimization: Implement garbage collection strategy, clear buffers immediately after API call
-- Database: Neon auto-scales, index on sessionId for fast queries, archive old sessions to S3
-
-**Performance Metrics (Observed):**
-- Latency: 2-3 seconds from speech to transcript display
-- Memory per session: ~15MB for 1-hour recording
-- API cost: ~$0.02-0.05 per hour (Gemini)
-- Network bandwidth: ~1MB for 1-hour audio (compressed base64)
-
-**Future Optimizations:**
-1. Implement audio compression (Opus codec) to reduce bandwidth
-2. Use streaming transcription API if Gemini releases it
-3. Add client-side audio fingerprinting for duplicate detection
-4. Implement session state persistence for crash recovery
-
----
-
-## 🚢 Deployment
-
-### Deploy to Vercel (Frontend)
-```bash
-vercel deploy
-```
-
-### Deploy WebSocket Server
-Options:
-- **Railway.app** (recommended): `npm run socket-server`
-- **Heroku:** `git push heroku main`
-- **AWS EC2:** Node.js instance with forever/PM2
-
-Update `.env.local` with production URLs.
-
----
-
-## 📚 Technology Stack
+ 
+## Technology Stack
 
 - **Frontend:** Next.js 14, React 18, TypeScript, Tailwind CSS
 - **Backend:** Node.js, Express, Socket.io
@@ -366,13 +293,13 @@ Update `.env.local` with production URLs.
 
 ---
 
-## 📝 License
+## License
 
 MIT - Feel free to use for personal/commercial projects
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 Pull requests welcome! Areas needing help:
 - [ ] Multi-language transcription support
@@ -382,7 +309,7 @@ Pull requests welcome! Areas needing help:
 
 ---
 
-## 📞 Support
+## Support
 
 Issues? Check:
 1. Terminal logs for errors
@@ -391,5 +318,3 @@ Issues? Check:
 4. Socket.io server logs
 
 ---
-
-**Built with ❤️ using Gemini API & Socket.io**
