@@ -79,8 +79,8 @@ npm install
 ### 2️⃣ Setup Environment
 Create `.env.local`:
 ```env
-GEMINI_API_KEY=AIzaSyC_ZMoOA6VjF1X9B27lUKId8_F38BCIMvA
-DATABASE_URL="postgresql://neondb_owner:npg_nWrx4M9QciET@ep-silent-scene-adml8ww3-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
+GEMINI_API_KEY=
+DATABASE_URL="postgresql:"
 NEXT_PUBLIC_SOCKET_URL=http://localhost:3001
 NEXT_PUBLIC_APP_URL=http://localhost:3000
 ```
